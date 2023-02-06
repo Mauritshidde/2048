@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 #include <curses.h>
+#include <time.h>
+#include <cstdlib>
 
 class Board {
     public:
@@ -15,6 +17,7 @@ class Board {
         void right();
         void placenumber();
 
+        bool moved = false;
         std::vector<std::vector<int>> board = {{2, 2, 0, 2}, {2, 0, 0, 0}, {2, 2, 0, 2048}, {2, 4, 32, 16}};
 };  
 
@@ -22,7 +25,22 @@ Board::Board() {
 
 }
 
+void Board::placenumber() {
+    if (moved) {
+        bool notfound = true;
+        while (notfound) {
+            int val = rand() % 4;
+            int val2 = rand() % 4;
+            if (board.at(val).at(val2) == 0) {
+                board.at(val).at(val2) = 2;
+                notfound = false;
+            }
+        }
+    }
+}
+
 void Board::up() {
+    moved = false;
     for (int j=0; j < 4; j++) {
         int base = 1;
         for (int k=0; k < 3; k++) {
@@ -31,11 +49,13 @@ void Board::up() {
                     board.at(i-1).at(j) = board.at(i).at(j) * 2;
                     board.at(i).at(j) = 0;
                     base++;
+                    moved = true;
                 } else if (board.at(i).at(j) == 0) {
 
                 } else if (board.at(i-1).at(j) == 0) {
                     board.at(i-1).at(j) = board.at(i).at(j);
                     board.at(i).at(j) = 0; 
+                    moved = true;
                 }
             }
         }
@@ -43,6 +63,7 @@ void Board::up() {
 }
 
 void Board::down() {
+    moved = false;
     for (int j=0; j < 4; j++) {
         int base = 1;
         for (int k=0; k < 3; k++) {
@@ -51,18 +72,22 @@ void Board::down() {
                     board.at(i+1).at(j) = board.at(i).at(j) * 2;
                     board.at(i).at(j) = 0;
                     base++;
+                    moved = true;
                 } else if (board.at(i).at(j) == 0) {
 
                 } else if (board.at(i+1).at(j) == 0) {
                     board.at(i+1).at(j) = board.at(i).at(j);
                     board.at(i).at(j) = 0; 
+                    moved = true;
                 }
             }
         }
     }
+    
 }
 
 void Board::left() {
+    moved = false;
     for (int j=0; j < 4; j++) {
         int base = 1;
         for (int k=0; k < 3; k++) {
@@ -71,11 +96,13 @@ void Board::left() {
                     board.at(j).at(i-1) = board.at(j).at(i) * 2;
                     board.at(j).at(i) = 0;
                     base++;
+                    moved = true;
                 } else if (board.at(j).at(i) == 0) {
 
                 } else if (board.at(j).at(i-1) == 0) {
                     board.at(j).at(i-1) = board.at(j).at(i);
                     board.at(j).at(i) = 0; 
+                    moved = true;
                 }
             }
         }
@@ -83,6 +110,7 @@ void Board::left() {
 }
 
 void Board::right() {
+    moved = false;
     for (int j=0; j < 4; j++) {
         int base = 1;
         for (int k=0; k < 3; k++) {
@@ -91,11 +119,13 @@ void Board::right() {
                     board.at(j).at(i+1) = board.at(j).at(i) * 2;
                     board.at(j).at(i) = 0;
                     base++;
+                    moved = true;
                 } else if (board.at(j).at(i) == 0) {
 
                 } else if (board.at(j).at(i+1) == 0) {
                     board.at(j).at(i+1) = board.at(j).at(i);
-                    board.at(j).at(i) = 0; 
+                    board.at(j).at(i) = 0;
+                    moved = true;
                 }
             }
         }
@@ -154,6 +184,7 @@ void Board::draw() {
 
 int main() {
     // char x = getchar();
+    srand(time(NULL));
     Board board;
     board.draw();
     board.run();
