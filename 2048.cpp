@@ -329,7 +329,6 @@ int main() {
     
     initscr();
     bool door = true;
-    int previouskey = 0;
     double deltaTime = 0;
     auto begin = std::chrono::high_resolution_clock::now();
     while (door) {
@@ -337,7 +336,6 @@ int main() {
         int c = getch();
         printw("%i", int(deltaTime));
         if (deltaTime >= 0.2) {
-            previouskey = c;
             if (c == 'w') {
                 board.up();
                 deltaTime = 0;
