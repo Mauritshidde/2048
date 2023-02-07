@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 #include <curses.h>
+#include <chrono>
+#include <math.h>
 
 class Board {
     public:
@@ -15,7 +17,7 @@ class Board {
         void placenumber();
         bool movepossible();
         
-        bool moved = false;
+        bool moved = true;
         int score =0;
     private:
         std::vector<std::vector<int>> board = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
@@ -128,6 +130,7 @@ void Board::placenumber() {
             }
         }
     }
+    moved = false;
 }
 
 void Board::up() {
@@ -254,50 +257,42 @@ void Board::draw() {
             } else if (i == 20) {
                 printw("|");
             } else {
-                if (i == 4 - std::to_string(board.at(j).at(0)).length()+1) {
+                if (i == 4 - int(std::to_string(board.at(j).at(0)).length())+1) {
                     std::string str = std::to_string(board.at(j).at(0));
                     if (str == "0") {
                         printw(" ");
                     } else {
-                        char arr[str.size()];
-                        for (int i=0; i < str.size(); i++) {
-                            arr[i] = char(str.at(i));
+                        for (int i=0; i < int(str.size()); i++) {
                             printw("%c", str.at(i));
                         }
                     }
                     i += std::to_string(board.at(j).at(0)).length()-1;
-                } else if (i == 9 - std::to_string(board.at(j).at(1)).length()+1) {
+                } else if (i == 9 - int(std::to_string(board.at(j).at(1)).length())+1) {
                     std::string str = std::to_string(board.at(j).at(1));
                     if (str == "0") {
                         printw(" ");
                     } else {
-                        char arr[str.size()];
-                        for (int i=0; i < str.size(); i++) {
-                            arr[i] = char(str.at(i));
+                        for (int i=0; i < int(str.size()); i++) {
                             printw("%c", str.at(i));
                         }
                     }
                     i += std::to_string(board.at(j).at(1)).length()-1;
-                } else if (i == 14 - std::to_string(board.at(j).at(2)).length()+1) {
+                } else if (i == 14 - int(std::to_string(board.at(j).at(2)).length())+1) {
                     std::string str = std::to_string(board.at(j).at(2));
                     if (str == "0") {
                         printw(" ");
                     } else {
-                        char arr[str.size()];
-                        for (int i=0; i < str.size(); i++) {
-                            arr[i] = char(str.at(i));
+                        for (int i=0; i < int(str.size()); i++) {
                             printw("%c", str.at(i));
                         }
                     }
                     i += std::to_string(board.at(j).at(2)).length()-1;
-                } else if (i == 19 - std::to_string(board.at(j).at(3)).length()+1) {
+                } else if (i == 19 - int(std::to_string(board.at(j).at(3)).length())+1) {
                     std::string str = std::to_string(board.at(j).at(3));
                     if (str == "0") {
                         printw(" ");
                     } else {
-                        char arr[str.size()];
-                        for (int i=0; i < str.size(); i++) {
-                            arr[i] = char(str.at(i));
+                        for (int i=0; i < int(str.size()); i++) {
                             printw("%c", str.at(i));
                         }
                     }
@@ -314,35 +309,66 @@ void Board::draw() {
         printw("-");
     }
     printw("\n");
+
+
+    printw("keys:");
+    printw("\n");
+    printw("W: move up");
+    printw("\n");
+    printw("S: move down");
+    printw("\n");
+    printw("A: move left");
+    printw("\n");
+    printw("D: move right");
+    printw("\n");
 }
 
 int main() {
     Board board;
+    board.placenumber();
+    
     initscr();
-
-    int c;
     bool door = true;
-    while (door = true) {
+    int previouskey = 0;
+    double deltaTime = 0;
+    auto begin = std::chrono::high_resolution_clock::now();
+    while (door) {
         board.draw();
-        c = getch();
-        if (c == 'w') {
-            board.up();
-        } else if (c == 'a') {
-            board.left();
-        } else if (c == 'd') {
-            board.right();
-        } else if (c == 's') {
-            board.down();
-        } else if (c == 27) {
-            door = false;    
-            break;
+        int c = getch();
+        printw("%i", int(deltaTime));
+        if (deltaTime >= 0.2) {
+            previouskey = c;
+            if (c == 'w') {
+                board.up();
+                deltaTime = 0;
+            } else if (c == 'a') {
+                board.left();
+                deltaTime = 0;
+            } else if (c == 'd') {
+                board.right();
+                deltaTime = 0;
+            } else if (c == 's') {
+                deltaTime = 0;
+                board.down();
+            } else if (c == 27) {
+                door = false;    
+                break;
+            }
         }
+
         board.placenumber();
         board.moved = false;
         if (!board.movepossible()) {
             door = false;
             break;
         }
+
+        auto end = std::chrono::high_resolution_clock::now();
+        auto dur = end - begin;
+        auto ms = std::chrono::duration_cast<std::chrono::nanoseconds>(dur).count();
+        deltaTime += (ms * pow(10, -9));
+
+        begin = end;
         clear();
         refresh();
     }
