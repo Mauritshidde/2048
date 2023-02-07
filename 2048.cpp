@@ -14,7 +14,9 @@ class Board {
         void right();
         void placenumber();
         bool movepossible();
+        
         bool moved = false;
+        int score =0;
     private:
         std::vector<std::vector<int>> board = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}};
 };  
@@ -141,6 +143,7 @@ void Board::up() {
                 } else if ((board.at(i).at(j) == board.at(i-1).at(j)) && (board.at(i).at(j) != 0)) {
                     board.at(i-1).at(j) = board.at(i).at(j) * 2;
                     board.at(i).at(j) = 0;
+                    score += board.at(i-1).at(j);
                     base++;
                     moved = true;
                 } else if (board.at(i).at(j) == 0) {
@@ -164,6 +167,7 @@ void Board::down() {
                 } else if ((board.at(i).at(j) == board.at(i+1).at(j)) && (board.at(i).at(j) != 0)) {
                     board.at(i+1).at(j) = board.at(i).at(j) * 2;
                     board.at(i).at(j) = 0;
+                    score += board.at(i+1).at(j);
                     base++;
                     moved = true;
                 } else if (board.at(i).at(j) == 0) {
@@ -187,6 +191,7 @@ void Board::left() {
                 } else if ((board.at(j).at(i) == board.at(j).at(i-1)) && (board.at(j).at(i) != 0)) {
                     board.at(j).at(i-1) = board.at(j).at(i) * 2;
                     board.at(j).at(i) = 0;
+                    score += board.at(j).at(i-1);
                     base++;
                     moved = true;
                 } else if (board.at(j).at(i) == 0) {
@@ -210,6 +215,7 @@ void Board::right() {
                 } else if ((board.at(j).at(i) == board.at(j).at(i+1)) && (board.at(j).at(i) != 0)) {
                     board.at(j).at(i+1) = board.at(j).at(i) * 2;
                     board.at(j).at(i) = 0;
+                    score += board.at(j).at(i+1);
                     base++;
                     moved = true;
                 } else if (board.at(j).at(i) == 0) {
@@ -225,6 +231,11 @@ void Board::run() {
 }
 
 void Board::draw() {
+
+    printw("%i", score);
+    printw("\n");
+    printw("\n");
+
     for (int i=0; i < 21; i++) {
         printw("-");
     }
